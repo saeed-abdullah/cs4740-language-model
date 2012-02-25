@@ -44,7 +44,7 @@ def preprocess_text(inputfile, outputfile):
             normalized_tokens = [lemmatizer.lemmatize(t) for t in tokens]
 
             # Writing the sentence back where each word is separated
-            # by space
+            # by a single space
             f.write(" ".join(normalized_tokens))
             f.write("\n")
 
