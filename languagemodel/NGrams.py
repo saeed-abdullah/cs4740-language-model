@@ -1,6 +1,7 @@
 # Language modeling using N-grams
 
 import os
+import util
 
 class NGram:
     """
@@ -61,53 +62,22 @@ class NGram:
 
         with open(self._inputfile) as f:
             for l in f:
-                line = l.strip().split()
 
-                # Adding the end marker at the end of current line.
-                line.extend([NGram._END_MARKER_])
+                # Get N-grams
+                ngrams = util.get_ngrams_from_line(l, self._window_size,
+                        NGram._START_MARKER_, NGram._END_MARKER_)
+                for n in ngrams:
+                    if not self._grams_count.has_key(n):
+                        self._grams_count[n] = 0
+                    self._grams_count[n] += 1
 
-                # Fill required starters.
-                # For example given the sentence, "I am walking .",
-                # the trigrams are: '<s> <s> I', '<s> I am', 'I am walking',
-                # 'am walking .', and, 'walking . </s>'.
-                for index in range(self._window_size - 1, 0, -1):
-                    starters = [NGram._START_MARKER_] * index
-                    starters.extend(line[:self._window_size - index])
-
-                    key = " ".join(starters)
-                    if key not in self._grams_count.keys():
-                        self._grams_count[key] = 0
-                    self._grams_count[key] += 1
-
-                    # Fill start for N-1 grams
-                    if index > 1:
-                        # For N-1 grams, last iteration should not be used.
-                        key = " ".join(starters[1:])
-                        if key not in self._subgrams_count.keys():
-                            self._subgrams_count[key] = 0
-                        self._subgrams_count[key] += 1
-
-
-                # All the starters have been produced.
-                # Given the L-words, the number of N-1 grams we
-                # can produce is L - ((N-1)-1).
-                for index in range(0, len(line) - (self._window_size - 2)):
-                    # Get N-1 gram
-                    key = " ".join(
-                            line[index : index + self._window_size - 1])
-
-                    if key not in self._subgrams_count:
-                        self._subgrams_count[key] = 0
-
-                    self._subgrams_count[key] += 1
-
-                    # Get N-gram
-                    if index + self._window_size <= len(line):
-                        key = " ".join(
-                                line[index : index + self._window_size])
-                        if key not in self._grams_count:
-                            self._grams_count[key] = 0
-                        self._grams_count[key] += 1
+                # Get N-1 Grams
+                subgrams = util.get_ngrams_from_line(l, self._window_size - 1,
+                        NGram._START_MARKER_, NGram._END_MARKER_)
+                for n in subgrams:
+                    if not self._subgrams_count.has_key(n):
+                        self._subgrams_count[n] = 0
+                    self._subgrams_count[n] += 1
 
     def dump_data(self, output_dir):
         """Dumps ngram and subgram counts in json format.
