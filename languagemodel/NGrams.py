@@ -1,5 +1,7 @@
 # Language modeling using N-grams
 
+import os
+
 class NGram:
     """
     Builds a N-Grams based language model.
@@ -107,4 +109,36 @@ class NGram:
                             self._grams_count[key] = 0
                         self._grams_count[key] += 1
 
+    def dump_data(self, output_dir):
+        """Dumps ngram and subgram counts in json format.
+
+        param
+        ----
+        output_dir: The path of output dir.
+        """
+        import json
+
+        output_path_pattern = output_dir + "{0}_N_{1}.json"
+
+        with open(output_path_pattern.format("ngrams",
+            self._window_size), "w") as f:
+            json.dump(self._grams_count, f)
+
+        with open(output_path_pattern.format("subgrams",
+            self._window_size), "w") as f:
+            json.dump(self._subgrams_count, f)
+
+def calculates_frequency(files):
+    """Util function for calculating data frequency."""
+    import glob
+
+    for f in files:
+        d, s = os.path.split(f)
+        outdir = os.path.join(d, "json_train/")
+        if not os.path.exists(outdir):
+            os.mkdir(outdir)
+
+        language_model = NGram(f, N=2)
+        language_model.build_ngrams()
+        language_model.dump_data(outdir)
 
