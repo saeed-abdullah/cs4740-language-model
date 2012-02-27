@@ -29,3 +29,22 @@ def test_preprocess_text():
             line = l.strip()
             assert line == expected[i]
 
+
+def test_ngrams_from_line():
+
+    line = "I am walking ."
+    expected_ngrams = ["_START_ _START_ I", "_START_ I am",
+            "I am walking", "am walking .", "walking . _END_"]
+    expected_subgrams = ["_START_ I", "I am", "am walking",
+            "walking .", ". _END_"]
+
+    actual_ngrams = util.get_ngrams_from_line(line, 3, "_START_",
+            "_END_")
+
+    actual_subgrams = util.get_ngrams_from_line(line, 2, "_START_",
+            "_END_")
+
+    assert expected_ngrams == actual_ngrams
+    assert expected_subgrams == actual_subgrams
+
+

@@ -48,3 +48,46 @@ def preprocess_text(inputfile, outputfile):
             f.write(" ".join(normalized_tokens))
             f.write("\n")
 
+
+def get_ngrams_from_line(sentence, window_size, start_symbol, end_symbol):
+    """Retrieves NGrams from given line.
+
+    It uses a sliding window of length N for producing all possible
+    N-grams.
+
+    params:
+    sentence: Line where each word is separated by whitespace.
+    window_size: The value of N in N-grams.
+    start_symbol: Start symbol to use, see NGram._START_.
+    end_symbol: End symbol to use, see NGram._END_.
+
+    return
+    ----
+    A list of ngrams in the order of the appearance.
+    """
+
+    ngrams = []
+    line = sentence.strip().split()
+
+    # Adding the end marker at the end of current line.
+    line.extend([end_symbol])
+
+    # Fill required starters.
+    # For example given the sentence, "I am walking .",
+    # the trigrams are: '<s> <s> I', '<s> I am', 'I am walking',
+    # 'am walking .', and, 'walking . </s>'.
+    for index in range(window_size - 1, 0, -1):
+        starters = [start_symbol] * index
+        starters.extend(line[:window_size - index])
+        ngrams.append(" ".join(starters))
+
+    # All the starters have been produced.
+    # Given the L-words, the number of N-1 grams we
+    # can produce is L - (N-1).
+    for index in range(0, len(line) - (window_size - 1)):
+        ngrams.append(" ".join(line[index : index + window_size]))
+
+    return ngrams
+
+
+
