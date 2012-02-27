@@ -1,5 +1,7 @@
 # Miscellaneous utility functions.
 
+from NGrams import NGram
+
 def preprocess_text(inputfile, outputfile):
     """Performs preprocessing on raw text for creating vocabulary.
 
@@ -90,4 +92,40 @@ def get_ngrams_from_line(sentence, window_size, start_symbol, end_symbol):
     return ngrams
 
 
+def calculate_perplexity(filename, prob_distribution, window_size):
+    """Calculates the perplexity of test data.
 
+    It returns the log of the eqn. (4.18) for better accuracy.
+
+    param
+    ----
+    filename: Input file name. It is assumed that the file has been
+        preprocessed so that each line contains a single complete sentence.
+        For more details, see preprocess_text.
+    prob_distribution: Distribution from training data, see
+        LaplaceSmoothedDistribution for more details.
+    window_size: The N of N-grams.
+
+    returns
+    ----
+    Log value of perplexity.
+    """
+    prob_sum = 0
+    token_count = 0
+
+    import math
+
+    with open(filename) as f:
+        for line in f:
+            ngrams = get_ngrams_from_line(line, window_size,
+                    NGram._START_MARKER_, NGram._END_MARKER_)
+
+            for n in ngrams:
+                prob = prob_distribution.get_probability(n)
+                prob_sum += math.log(prob)
+
+            # As specified in book (pg. 96), that token count
+            # should not include start symbol.
+            token_count += len(ngrams) - (window_size - 1)
+
+    return -1./token_count * prob_sum

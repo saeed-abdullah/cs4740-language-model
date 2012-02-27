@@ -47,4 +47,27 @@ def test_ngrams_from_line():
     assert expected_ngrams == actual_ngrams
     assert expected_subgrams == actual_subgrams
 
+def test_calculate_perplexity():
+
+    inputfile = "/tmp/2.txt"
+    with open(inputfile, "w") as f:
+        f.write("I am , what I do .")
+
+    from .. import probability
+
+    ngrams = {"_START_ I": 2, "I am": 1, "am .": 1, ". _END_": 2,
+            "I do": 1, "do .": 1}
+    subgrams = {"I": 2, "am": 1, "do": 1, ".": 2, "_END_": 2,
+            "_START_": 2}
+
+    prob = probability.LaplaceSmoothedDistribution(
+            len(subgrams))
+
+    prob.build_probability(ngrams, subgrams)
+
+    print util.calculate_perplexity(inputfile, prob, 3)
+
+
+
+
 
