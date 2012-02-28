@@ -1,7 +1,6 @@
 # Language modeling using N-grams
 
 import os
-import util
 
 class NGram:
     """
@@ -59,6 +58,8 @@ class NGram:
         """
         Calculates the frequncy of N-grams and N-1 subgrams.
         """
+
+        import util
 
         with open(self._inputfile) as f:
             for l in f:
