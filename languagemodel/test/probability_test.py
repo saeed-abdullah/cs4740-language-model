@@ -37,3 +37,9 @@ class TestProbability(unittest.TestCase):
         self.assertAlmostEqual(prob.get_probability("I am"), 2./8)
         self.assertAlmostEqual(prob.get_probability("blah do"), 1./6)
 
+    def test_good_turing_distribution(self):
+        prob = probability.GoodTuringDistribution()
+        prob.build_probability(TestProbability._ngrams)
+
+        self.assertAlmostEqual(prob.get_probability("I am"), 0.0625)
+        self.assertAlmostEqual(prob.get_probability("blah do"), 1./2)
