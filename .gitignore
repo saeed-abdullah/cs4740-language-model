@@ -24,3 +24,6 @@
 
 #Ignore java class files.
 *.class
+
+*.bbg
+*.blg
