@@ -26,16 +26,16 @@
 
 Our submission, written in the language Python, reads in raw text, cleans and formats it with the help of NLTK, and generates a smoothed and efficient dictionary of both N-grams for perplexity-based text similarity calculation and (N-1)-grams for sentence generation.
 
-To summarize, in this report, we discuss about
+To summarize, in this report, we discuss:
 \begin{itemize}
-\item Our implementation of unigram and bigram from Dataset1 and Dataset2.
+\item Our implementation of unigrams and bigrams from Dataset1 and Dataset2.
 \item Handling unknown words (trivial).
-\item The implementation of Laplace smoothing.
-\item The design and functionality of random sentence generator.
-\item Design of email author prediction and the analysis of result.
-\item Implementation of a general N-gram model (extension 1).
+\item Our implementation of Laplace smoothing.
+\item The design and functionality of our random sentence generator.
+\item Design of our email author prediction and the analysis of result.
+\item Our implementation of a general N-gram model (extension 1).
 \item Design and implementation of Simple Good Turing smoothing (extension 2)
-\item Nontrivial handling unknown words (extension 4).
+\item Our approach for nontrivial handling unknown words (extension 4).
 \end{itemize}
 \section{Preprocessing}
 
@@ -45,7 +45,7 @@ of the sentences and then perform lemmatization and word tokenization.
 \input{images/preprocess.tex}
 
 \subsection{Sentence Segmentation}
-Initially we used period to mark the boundary of sentence, but period
+Initially we used period to mark the boundary of sentence, but periods then
 simultaneously indicate the termination of sentence and abbreviation. For
 example, using period as boundary indicator does not work for 
 the sentence \texttt{Mr. A got his Ph.D. from U.S.A.}, so to divide the
@@ -54,15 +54,15 @@ text into individual sentences we use Punkt sentence segmenter
 
 \subsection{Lemmatization}
 For grouping different inflicted forms of a word into a single term, we use
-WordNet lemmatizer from NLTK. After applying lemmatizer on each sentences
-from previous step, we get a sequence of lemma.
+WordNet lemmatizer from NLTK. After applying lemmatizer on each sentence
+from previous steps, we get a sequence of lemmas.
 
 \subsection{Tokenization}
-To split the sentence into words and punctuation, we use
-TreebankWordToeknizer from NLTK. It tokenizes using the conventions from Penn
+To split the sentence into words and punctuation, we use NLTK's
+TreebankWordToeknizer, tokenizing by the conventions from Penn
 Treebank\footnote{http://www.cis.upenn.edu/~treebank/tokenization.html}.
 Contractions are split into their component morphemes. For example,
-\texttt{You're} are split into \texttt{You} and \texttt{'re}.
+\texttt{You're} is split into \texttt{You} and \texttt{'re}.
 
 The implementation of the preprocessing is in
 \href{https://github.com/saeed-abdullah/cs4740-language-model/blob/master/languagemodel/util.py\#L5}
@@ -71,28 +71,28 @@ one sentence per line where each sentence consists of words and punctuation
 separated by a single space.
 
 \section{N-Gram generation}
-In stead of handling unigram, bigram, trigram and so on as separate cases, we
-use a more generalized approach to handle N-grams in our
+Instead of handling unigrams, bigrams, trigrams and so on as separate cases, we
+use a more generalized approach to handle n-grams in our
 \href{https://github.com/saeed-abdullah/cs4740-language-model/blob/master/languagemodel/NGrams.py}
 {code}. To do so, we use the fact that for any calculation, we only need to keep
-track of frequency for N and N-1 grams --- $c(w_{n-N+1}^{n})$ and 
+track of frequency for n and n-1 grams --- $c(w_{n-N+1}^{n})$ and 
 $c(w_{n-N+1}^{n-1})$, respectively.
 
 So, for building n-gram based language models, we keep two dictionaries for
-N and N-1 grams, where the keys are the ngrams and the values represents
-the frequency of that ngram.
+n-grams and n-1 subgrams, where each key is a n-gram and the values represent
+the frequency of that n-gram.
 
 \section{Smoothing}
 
 We \href{https://github.com/saeed-abdullah/cs4740-language-model/blob/master/languagemodel/probability.py}
 {implemented} both Laplace and Good-Turing smoothing.
 \subsection{Laplace smoothing}
-For unigram, we calculated the Laplace smoothing as:
+For unigrams, we calculated the Laplace smoothing as:
 \[P_{\text{Laplace}}(w_i) = \frac{c_i + 1}{N + V},\]
 where $V$ is the size of vocabulary and $N$ is the number of tokens
 in the dataset.
 
-For bigram, the Laplace smoothing is calculated as:
+For bigrams, the Laplace smoothing is calculated as:
 \[P_{\text{Laplace}}P(w_n|w_{n-1}) = 
 \frac{C(w_{n-1}w_n)  + 1}{C(w_{n-1}) + V}.\]
 
@@ -124,7 +124,7 @@ standard deviation. So, we switch to $r*$ if:
 \subsection{Trivial Unknown Word Handling}
 
 
-As described in the text \cite{jurafskybook2009} our algorithm limits the ngram models’ vocabulary size by modifying the training corpus. The first 15 tokens in the training corpus are added to the unknown word list, and all future occurrences of these tokens in the corpus are replaced with the string ``UNK'', signifying their being unknown words. This approach is a simple and modular tweak that could be easily built into our existing N gram structure.
+As described in the text \cite{jurafskybook2009} our algorithm limits the n-gram models’ vocabulary size by modifying the training corpus. The first 15 tokens in the training corpus are added to the unknown word list, and all future occurrences of these tokens in the corpus are replaced with the string ``UNK'', signifying their being unknown words. This approach is a simple and modular tweak that could be easily built into our existing N gram structure.
 
 The number 15 was chosen after a few trials on the various training sets. As there were a lot of repeated tokens at the beginning of the corpora, choosing the first 15 tokens resulted in reasonable numbers of unique tokens to be treated being treated as unknowns. Smaller values caused very small unique unknown words (perhaps due to the heavy use of HTML tags in our data sets), and though this number may have to be adjusted for different data sets it works well for our given training corpus .
 
@@ -132,17 +132,17 @@ The number 15 was chosen after a few trials on the various training sets. As the
 
 \section{Nontrivial Unknown Word Handling}
 
-The basic approach of out nontrivial unknown word handling is the same for trivial handling, with the difference being that this algorithm keeps two unknown word lists: a trivial unknown word list of words replaced with ``UNK" and a nontrivial unknown word list for words replaced with ``UNKS\_NONTRIV". When a token from the first 15 tokens in the training corpus was comprised of only letters and contained at least one vowel and a consonant, the token is considered nontrivial and added to the second list. The rest of the first 15 tokens in the training corpus were considered to be trivial unknown words. Meaningful English words usually consist of only letters with at least one vowel and a consonant, so this criteria reflects this language trait. As above, this approach is especially applicable to our data set, with its large number of HTML syntax tags. Sentences was generated by our random sentence generator were surprisingly readable, which gives us faith in this approach
+The basic approach of our nontrivial unknown word handling is the same as trivial handling, with the difference being that this algorithm keeps two unknown word lists: a trivial unknown word list of words replaced with ``UNK" and a nontrivial unknown word list for words replaced with ``UNK\_NONTRIV". When a token from the first 15 tokens in the training corpus was comprised of only letters and contained at least one vowel and a consonant, the token is considered nontrivial and added to the second list. The rest of the first 15 tokens in the training corpus were considered to be trivial unknown words. Meaningful english words usually consist of only letters with at least one vowel and a consonant, so this criteria reflects this language trait. As above, this approach is especially applicable to our data set, with its large number of HTML syntax tags.
 
 % From Alistair:
 \section{Random Sentence Generator}
-The random sentence generator works essentially by finding the set of all start sentences and picks one based upon the weighted probability of each start marker - the number of times that particular start marker appears over the number of total start markers. After choosing a start word, it adds that word to the sentence and continues looking for N-Grams that start with the next logical sequence of words from the previous N-Gram - i.e. it removes the first word of the N-Gram and searches for N-Grams that start with the words other than the first. It runs until the weighted choice chooses an N-Gram with the ``\_END\_" marker in it, at which point it ends the sentence creation and returns the completed sentence. Our data structures for storing N-grams allow for access to performing random sentence generation across general N-Grams, rather than just unigrams and bigrams.  
+The random sentence generator works essentially by finding the set of all start sentences and picks one based upon the weighted probability of each start marker - the number of times that particular start marker appears over the number of total start markers. After choosing a start word, it adds that word to the sentence and continues looking for n-grams that start with the next logical sequence of words from the previous n-gram - i.e. it removes the first word of the n-gram and searches for n-grams that start with the words other than the first. It runs until an n-gram is chosen with the ``\_END\_" marker in it, at which point it ends the sentence creation and returns the completed sentence. Our data structures for storing n-grams allow for access to performing random sentence generation across general n-grams, rather than just unigrams and bigrams.  
 
-We build the random sentences for unigrams based upon the calculated probability of the number of times it appears in the corpus over the number of words and word types in the corpus. After choosing a start word, it then randomly chooses a word (the probability is weighted by the frequency of the word in the corpus) and continues until it selects an end marker.
+We build the random sentences for unigrams based upon the calculated probability of a word appearing in the corpus. After choosing a start word, it then randomly chooses a word (the probability is weighted by the frequency of the word in the corpus) and continues until it selects an end marker.
 
 The bigrams calculate the probability of the next bigram by $P(w2|w1) = \frac{\#(w1 w2)}{\#(w1)}$, i.e. the number of times a specific bigram appears over the total number of times the first word in the bigram appears. 
 
-There is also the ability to build sentences from previously computed probabilities stored in Hash Tables, which is how we computed the example sentences below. This required a bit of re-factoring the initial code for computing random sentences, but the NGram object that we have constructed or precomputed tables of unigrams and bigrams with their respective frequencies are possibilities for creating random sentences. The keys and values were stored in JSON format which are then loaded into python for computing, and on large corpora this is where a significant amount of the processing time occurs, as it takes a fair amount of time to load a nearly 30MB JSON file. 
+There is also the ability to build sentences from previously computed probabilities stored in Hash Tables, which is how we computed the example sentences below. This required a bit of re-factoring the initial code for computing random sentences, but the n-gram object that we have constructed for precomputed tables of unigrams and bigrams with their respective frequencies greatly the creation process. The keys and values were stored in JSON format which are then loaded into python for computing, and on large corpora this is where a significant amount of the processing time occurs as it takes a fair amount of time to load a nearly 30MB JSON file. 
 
 \subsection{Sample Unigram Randomly Generated Sentences:}
 (Note that some words like was are truncated)
@@ -200,14 +200,14 @@ bigram & $11.9678$ & $11.1329$\\
 \caption{\label{table:perplexity} Log Perplexity.}
 \end{table}
 From Table \ref{table:perplexity}, the perplexity across datasets seems
-consistent. The perplexity is considerably low when using bigram comparing
-to the language model built using unigram, as expected.
+consistent. The perplexity is considerably lower when using bigrams compared
+to unigrams, as expected.
 
 
 \section{Kaggle result}
 
 \subsection{Implementation}
- We first segmented the validation and test corpora of emails into a set of individual emails with a corresponding author token. We then trained three separate n-gram models, one for each author, on the training data. For each email, we determined the perplexity of each n-gram was determined with respect to that email, and that email’s author was predicted as the n-gram with the lowest perplexity. These predictions were then output to a record file, to be iterated through and checked against our previously made email and author set.
+We first segmented the validation and test corpora of emails into a set of individual emails with a corresponding author token. We then trained three separate n-gram models, one for each author, on the training data. For each email, we determined the perplexity of each n-gram with respect to that email, and that email’s author was predicted based on the lowest perplexity score. These predictions were then output to a record file, to be iterated through and checked against our previously made email and author set.
 \begin{table}[htb]
 \begin{center}
 \begin{tabular}{|c|c|}
