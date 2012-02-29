@@ -1,0 +1,18 @@
+\begin{center}
+\begin{figure}[!htb]
+\begin{tikzpicture}[auto, node distance=4.5cm,>=latex']
+
+\node [input, name=input] {};
+\node [block, right of=input, node distance=3cm] (segmenter) {Segmenter};
+\node [block, right of=segmenter] (lemmataizer) {Lemmatizer};
+\node [block, right of=lemmataizer] (tokenizer) {Tokenizer};
+\node [output, right of=tokenizer, node distance=3cm] (output) {};
+\draw [->] (segmenter) -- node[name=u] {Sentences} (lemmataizer);
+\draw [->] (lemmataizer) -- node {Lemmas} (tokenizer);
+\draw [->] (tokenizer) -- node{Tokens} (output);
+\draw [->] (input) -- node{Text} (segmenter);
+
+\end{tikzpicture}
+\caption{\label{fig:preprocess} Steps in Text Preprocessing.}
+\end{figure}
+\end{center}

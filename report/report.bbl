@@ -1,0 +1,19 @@
+\begin{thebibliography}{1}
+
+\bibitem{gale1995good}
+W.A. Gale and G.~Sampson.
+\newblock Good-turing frequency estimation without tears*.
+\newblock {\em Journal of Quantitative Linguistics}, 2(3):217--237, 1995.
+
+\bibitem{jurafskybook2009}
+Dan Jurafsky and James~H. Martin.
+\newblock {\em Speech and language processing: an introduction to natural
+  language processing, computational linguistics, and speech recognition}.
+\newblock Prentice Hall, 2009.
+
+\bibitem{kiss2006unsupervised}
+T.~Kiss and J.~Strunk.
+\newblock Unsupervised multilingual sentence boundary detection.
+\newblock {\em Computational Linguistics}, 32(4):485--525, 2006.
+
+\end{thebibliography}
